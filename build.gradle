@@ -51,7 +51,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.apache.commons:commons-dbcp2")
-    compile("org.springframework.boot:spring-boot-starter-tomcat")
+    compile('org.apache.tomcat.embed:tomcat-embed-jasper')
     compile("org.springframework:spring-jdbc:4.0.0.M3")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
