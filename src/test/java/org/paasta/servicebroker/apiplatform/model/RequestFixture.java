@@ -12,8 +12,7 @@ public class RequestFixture {
     public static Map<String, Object> getParameters(String num) {
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("owner", "testuser");
-        parameters.put("org_name", "org_name_"+num);
+        parameters.put("owner", "testuser"+num);
         return parameters;
     }
 
@@ -29,7 +28,6 @@ public class RequestFixture {
     }
 
     public static CreateServiceInstanceRequest getCreateServiceInstanceRequest() {
-
         ServiceDefinition service = ServiceDefinitionFixture.getService();
 
         return new CreateServiceInstanceRequest(
@@ -54,17 +52,6 @@ public class RequestFixture {
         );
     }
 
-    public static UpdateServiceInstanceRequest getUpdateServiceInstanceRequest() {
-
-        ServiceDefinition service = ServiceDefinitionFixture.getService();
-
-        return new UpdateServiceInstanceRequest(
-                service.getPlans().get(0).getId(),
-                service.getId(),
-                getParameters("002"),
-                getPreviousValues());
-    }
-
     public static CreateServiceInstanceBindingRequest getCreateServiceInstanceBindingRequest() {
 
         ServiceDefinition service = ServiceDefinitionFixture.getService();
@@ -73,6 +60,36 @@ public class RequestFixture {
                 service.getId(),
                 service.getPlans().get(0).getId(),
                 "app_guid");
+    }
+
+    public static DeleteServiceInstanceRequest getDeleteServiceInstanceRequest() {
+
+        ServiceInstance service = ServiceInstanceFixture.getServiceInstance();
+
+        return new DeleteServiceInstanceRequest(
+                service.getServiceInstanceId(),
+                service.getServiceDefinitionId(),
+                service.getPlanId());
+    }
+
+    public static UpdateServiceInstanceRequest getUpdateServiceInstanceRequest() {
+
+        ServiceInstance service = ServiceInstanceFixture.getServiceInstance();
+
+        return new UpdateServiceInstanceRequest(
+                service.getPlanId(),
+                service.getServiceDefinitionId());
+    }
+
+    public static DeleteServiceInstanceBindingRequest getDeleteServiceInstanceBindingRequest() {
+
+        ServiceInstance service = ServiceInstanceFixture.getServiceInstance();
+
+        return new DeleteServiceInstanceBindingRequest(
+                "test_bindingId",
+                service,
+                service.getServiceDefinitionId(),
+                service.getPlanId());
     }
 
 }

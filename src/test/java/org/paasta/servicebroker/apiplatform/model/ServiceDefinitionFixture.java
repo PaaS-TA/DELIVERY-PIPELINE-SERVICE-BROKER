@@ -4,27 +4,24 @@ import org.openpaas.servicebroker.model.Plan;
 import org.openpaas.servicebroker.model.ServiceDefinition;
 import org.paasta.servicebroker.apiplatform.common.TestConstants;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ServiceDefinitionFixture {
 
     public static ServiceDefinition getService() {
 
         return new ServiceDefinition(
-
-                TestConstants.SERVICEDEFINITION_ID,
-                TestConstants.SERVICEDEFINITION_NAME,
-                "A paasta source control service for application development.provision parameters : parameters {owner_id : {ownerid}, org_name:{organizationName}}",
-                false,
-                false,
+                "af86588c-6212-11e7-907b-a6006ad3dba0",
+                "delivery-pipeline",
+                "A paasta source control service for application development.provision parameters : parameters {owner : owner}",
+                false, // bindable
+                false, // updatable
                 Arrays.asList(
-                        new Plan(TestConstants.SERVICEDEFINITION_PLAN_ID,
-                                "Default",
+                        new Plan("a5930564-6212-11e7-907b-a6006ad3dba0",
+                                "default",
                                 "This is a default service plan. All services are created equally.",
                                 null)),
-                Arrays.asList("paasta-sourcecontrol"),
+                Arrays.asList("delivery-pipeline"),
                 getMetadata(),
                 null,
                 null);
@@ -41,5 +38,12 @@ public class ServiceDefinitionFixture {
         metadata.put("documentationUrl","documentationUrl");
         metadata.put("supportUrl","supportUrl");
         return metadata;
+    }
+
+    public static List<ServiceDefinition> getCatalog() {
+        List<ServiceDefinition> result = new ArrayList<>();
+        result.add(getService());
+
+        return result;
     }
 }
