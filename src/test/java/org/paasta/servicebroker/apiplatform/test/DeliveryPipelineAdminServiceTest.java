@@ -4,13 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
 import org.paasta.servicebroker.apiplatform.common.TestConstants;
 import org.paasta.servicebroker.apiplatform.model.JpaRepositoryFixture;
-import org.paasta.servicebroker.apiplatform.model.RequestFixture;
 import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
 import org.paasta.servicebroker.deliverypipeline.model.JpaServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.repo.JpaServiceInstanceRepository;
@@ -18,17 +17,25 @@ import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAd
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by user on 2017-09-13.
@@ -54,26 +61,36 @@ public class DeliveryPipelineAdminServiceTest {
     @Value("${paasta.delivery.pipeline.api.password}")
     String apiPassword;
 
+    private MockRestServiceServer mockServer;
+
     @Mock
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         print();
+
+        mockServer = MockRestServiceServer.createServer(restTemplate);
+
         ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUrl", apiUrl);
         ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUsername", apiUsername);
         ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiPassword", apiPassword);
-
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "restTemplate", restTemplate);
 
     }
 
     @Test
     public void test_createDashboard() throws Exception {
-//        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
-//        when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
-//        deliveryPipelineAdminService.createDashboard(ServiceInstanceFixture.getServiceInstance(), TestConstants.PARAM_KEY_OWNER);
-//        verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                Matchers.any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+
+        deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
 
     }
 
@@ -124,16 +141,16 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_deleteDashboard() throws Exception {
-//        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-//        this.restTemplate = new RestTemplate();
-//        ResponseEntity<Map> myEntity = new ResponseEntity<Map>(HttpStatus.ACCEPTED);
-//        Mockito.when(restTemplate.exchange(
-//                Matchers.eq(apiUrl + "/serviceInstance/" + serviceInstance.getServiceInstanceId()),
-//                Matchers.eq(HttpMethod.DELETE),
-//                Matchers.<HttpEntity<Map>>any(),
-//                Matchers.<ParameterizedTypeReference<Map>>any())
-//        ).thenReturn(myEntity);
-//        deliveryPipelineAdminService.deleteDashboard(serviceInstance);
+
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        ResponseEntity responseEntity = new ResponseEntity<String>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                Matchers.any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<String>>any())).thenReturn(ResponseEntity.ok("ok"));
+
+        deliveryPipelineAdminService.deleteDashboard(serviceInstance);
     }
 
 

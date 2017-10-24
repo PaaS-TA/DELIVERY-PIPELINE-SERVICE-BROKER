@@ -38,8 +38,8 @@ public class DeliveryPipelineServiceInstanceServiceTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "dashboard_url", TestConstants.DASHBOARD_URL);
-        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "param_owner", TestConstants.PARAM_KEY_OWNER);
+//        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "dashboard_url", TestConstants.DASHBOARD_URL);
+//        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "param_owner", TestConstants.PARAM_KEY_OWNER);
 
     }
 
