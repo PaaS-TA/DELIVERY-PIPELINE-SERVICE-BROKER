@@ -26,6 +26,15 @@ public class TestConstants {
 
     public static final String DASHBOARD_URL = "http://test-dashboardurl";
 
-    public static final String BINDING_ID = "service_instance_binding_id";
+
+    public static final String DB_SERVICEINSTANCEID_FIELD_NANME  = "service_instance_id";
+    public static final String DB_DASHBOARDURL_FIELD_NANME  = "dashboard_url";
+    public static final String DB_ORGGUID_FIELD_NANME  = "organization_guid";
+    public static final String DB_SPACEGUID_FIELD_NANME  = "space_guid";
+    public static final String DB_PLANID_FIELD_NAME  = "plan_id";
+    public static final String DB_SERVICEID_FILED_NAME  = "service_id";
+
+
+
 
 }

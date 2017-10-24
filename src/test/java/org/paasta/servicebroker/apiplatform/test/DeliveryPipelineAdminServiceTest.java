@@ -15,14 +15,13 @@ import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
 import org.paasta.servicebroker.deliverypipeline.model.JpaServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.repo.JpaServiceInstanceRepository;
 import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -34,57 +33,69 @@ import static org.mockito.Mockito.*;
 /**
  * Created by user on 2017-09-13.
  */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource("classpath:test.properties")
 public class DeliveryPipelineAdminServiceTest {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Mock
     JpaServiceInstanceRepository jpaServiceInstanceRepository;
 
-    @Mock
+    @InjectMocks
     DeliveryPipelineAdminService deliveryPipelineAdminService;
 
 
-    private static String spyTestUser = null;
+    @Value("${paasta.delivery.pipeline.api.url}")
+    private String apiUrl;
+    @Value("${paasta.delivery.pipeline.api.username}")
+    String apiUsername;
+    @Value("${paasta.delivery.pipeline.api.password}")
+    String apiPassword;
+
+    @Mock
+    RestTemplate restTemplate;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+        print();
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUrl", apiUrl);
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUsername", apiUsername);
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiPassword", apiPassword);
 
-//        ReflectionTestUtils.setField(deliveryPipelineAdminService, "param_owner", TestConstants.PARAM_KEY_OWNER);
 
-        Random rnd = new Random();
-        StringBuilder sb = new StringBuilder();
-        for(int i=0;i<10;i++) {
-            sb.append(String.valueOf((char)((int)(rnd.nextInt(26)) + 97)));
-        }
-        spyTestUser = "mokito_"+sb.toString() + "@" + sb.toString() +".com";
     }
 
+    @Test
+    public void test_createDashboard() throws Exception {
+//        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+//        when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
+//        deliveryPipelineAdminService.createDashboard(ServiceInstanceFixture.getServiceInstance(), TestConstants.PARAM_KEY_OWNER);
+//        verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
 
-
-
-
-
+    }
 
     @Test
-    public void test_createDashboard() throws Exception{
+    public void test_findById_case() throws Exception {
         JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
-        when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
-        deliveryPipelineAdminService.createDashboard(ServiceInstanceFixture.getServiceInstance(),spyTestUser);
-        verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
-
+        jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+        when(jpaServiceInstanceRepository.findOne(anyString())).thenReturn(jpaServiceInstance);
+        ServiceInstance serviceInstance = deliveryPipelineAdminService.findById(jpaServiceInstance.getServiceInstanceId());
+        assertThat(serviceInstance.getServiceInstanceId(), is(TestConstants.SV_INSTANCE_ID_001));
     }
 
 
     @Test
-    public void test_findById_case_null() throws Exception{
+    public void test_findById_case_null() throws Exception {
         when(jpaServiceInstanceRepository.findOne(anyString())).thenReturn(null);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findById(TestConstants.SV_INSTANCE_ID_001);
         assertThat(serviceInstance, is(nullValue()));
     }
 
-
     @Test
-    public void test_findByOrgGuid() throws Exception{
+    public void test_findByOrgGuid() throws Exception {
         JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
         when(jpaServiceInstanceRepository.findByOrganizationGuid(anyString())).thenReturn(jpaServiceInstance);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(jpaServiceInstance.getOrganizationGuid());
@@ -96,35 +107,39 @@ public class DeliveryPipelineAdminServiceTest {
 
 
     @Test
-    public void test_findByOrgGuid_case_null() throws Exception{
+    public void test_findByOrgGuid_case_null() throws Exception {
         when(jpaServiceInstanceRepository.findByOrganizationGuid(anyString())).thenReturn(null);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(TestConstants.SV_INSTANCE_ID_001);
         assertThat(serviceInstance, is(nullValue()));
     }
 
 
-
     @Test
-    public void test_isExistsService() throws Exception{
+    public void test_isExistsService_false() throws Exception {
         JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
-        when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
-        deliveryPipelineAdminService.isExistsService(ServiceInstanceFixture.getServiceInstance());
-        verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
+        when(jpaServiceInstanceRepository.findByOrganizationGuid(jpaServiceInstance.getServiceInstanceId())).thenReturn(jpaServiceInstance);
+        boolean isExistsService = deliveryPipelineAdminService.isExistsService(ServiceInstanceFixture.getServiceInstance());
+        assertThat(isExistsService, is(false));
     }
 
     @Test
-    public void findById_Test() throws Exception{
-        JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
-        jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
-        when(jpaServiceInstanceRepository.findOne(jpaServiceInstance.getServiceInstanceId())).thenReturn(jpaServiceInstance);
-        ServiceInstance serviceInstance = deliveryPipelineAdminService.findById(jpaServiceInstance.getServiceInstanceId());
-        assertThat(serviceInstance.getServiceInstanceId(),is(jpaServiceInstance.getServiceInstanceId()));
+    public void test_deleteDashboard() throws Exception {
+//        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+//        this.restTemplate = new RestTemplate();
+//        ResponseEntity<Map> myEntity = new ResponseEntity<Map>(HttpStatus.ACCEPTED);
+//        Mockito.when(restTemplate.exchange(
+//                Matchers.eq(apiUrl + "/serviceInstance/" + serviceInstance.getServiceInstanceId()),
+//                Matchers.eq(HttpMethod.DELETE),
+//                Matchers.<HttpEntity<Map>>any(),
+//                Matchers.<ParameterizedTypeReference<Map>>any())
+//        ).thenReturn(myEntity);
+//        deliveryPipelineAdminService.deleteDashboard(serviceInstance);
     }
 
-    @Test
-    public void test_deleteDashboard() throws Exception{
-        doNothing().when(jpaServiceInstanceRepository).delete(TestConstants.SV_INSTANCE_ID_001);
-        deliveryPipelineAdminService.deleteDashboard(ServiceInstanceFixture.getServiceInstance());
-        verify(jpaServiceInstanceRepository).delete(TestConstants.SV_INSTANCE_ID_001);
+
+    private void print() {
+        logger.info("apiUrl : " + apiUrl);
+        logger.info("apiUsername : " + apiPassword);
+        logger.info("apiPassword : " + apiPassword);
     }
 }

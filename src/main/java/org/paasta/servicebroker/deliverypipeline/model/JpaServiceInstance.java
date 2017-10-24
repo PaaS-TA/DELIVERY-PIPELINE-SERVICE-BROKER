@@ -2,8 +2,11 @@ package org.paasta.servicebroker.deliverypipeline.model;
 
 import org.openpaas.servicebroker.model.ServiceInstance;
 
-import javax.persistence.*;
-//import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 
 
 /**
