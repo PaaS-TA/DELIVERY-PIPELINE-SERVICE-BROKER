@@ -11,13 +11,13 @@ public class ServiceDefinitionFixture {
     public static ServiceDefinition getService() {
 
         return new ServiceDefinition(
-                "af86588c-6212-11e7-907b-a6006ad3dba0",
-                "delivery-pipeline",
+                TestConstants.SERVICEDEFINITION_ID,
+                TestConstants.SERVICEDEFINITION_NAME,
                 "A paasta source control service for application development.provision parameters : parameters {owner : owner}",
                 false, // bindable
                 false, // updatable
                 Arrays.asList(
-                        new Plan("a5930564-6212-11e7-907b-a6006ad3dba0",
+                        new Plan(TestConstants.SERVICEDEFINITION_PLAN_ID,
                                 "default",
                                 "This is a default service plan. All services are created equally.",
                                 null)),

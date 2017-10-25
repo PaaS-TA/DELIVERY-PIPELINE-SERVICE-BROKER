@@ -27,13 +27,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -57,9 +55,13 @@ public class DeliveryPipelineAdminServiceTest {
     @Value("${paasta.delivery.pipeline.api.url}")
     private String apiUrl;
     @Value("${paasta.delivery.pipeline.api.username}")
-    String apiUsername;
+    private String apiUsername;
     @Value("${paasta.delivery.pipeline.api.password}")
-    String apiPassword;
+    private String apiPassword;
+    @Value("${service.dashboard.url}")
+    private String dashboardUrl;
+
+
 
     private MockRestServiceServer mockServer;
 

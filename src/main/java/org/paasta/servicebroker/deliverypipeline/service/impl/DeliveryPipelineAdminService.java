@@ -44,6 +44,8 @@ public class DeliveryPipelineAdminService {
     @Autowired
     private JpaServiceInstanceRepository jpaServiceInstanceRepository;
 
+    @Autowired
+    RestTemplate restTemplate;
 
     private String authorization;
 
@@ -52,6 +54,7 @@ public class DeliveryPipelineAdminService {
 
         return (jpaServiceInstanceRepository.findByOrganizationGuid(instance.getOrganizationGuid()) != null);
     }
+
 
 
     public ServiceInstance findById(String id) {
@@ -124,7 +127,7 @@ public class DeliveryPipelineAdminService {
 
 
     public void send(String reqUrl, HttpMethod httpMethod, Object bodyObject) {
-        RestTemplate restTemplate = new RestTemplate();
+
         if (apiUsername.isEmpty()) this.authorization = "";
         else
             this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
@@ -136,13 +139,13 @@ public class DeliveryPipelineAdminService {
         HttpEntity<Object> reqEntity = new HttpEntity<>(bodyObject, reqHeaders);
 
         logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
-        ResponseEntity<Map> resEntity = restTemplate.exchange(reqUrl, httpMethod, reqEntity, Map.class);
-        logger.info("Map send :: Response Type: {}", resEntity.getBody().getClass());
+        ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, httpMethod, reqEntity, String.class);
+        logger.info("send :: Response Status: {}", resEntity.getStatusCode());
     }
 
     public void send(String reqUrl, HttpMethod httpMethod) {
 
-        RestTemplate restTemplate = new RestTemplate();
+
         if (apiUsername.isEmpty()) this.authorization = "";
         else
             this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
@@ -155,7 +158,7 @@ public class DeliveryPipelineAdminService {
 
         logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
         ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, httpMethod, reqEntity, String.class);
-        logger.info("Map send :: Response Type: {}", resEntity.getBody().getClass());
+        logger.info("send :: Response Status: {}", resEntity.getStatusCode());
     }
 }
 

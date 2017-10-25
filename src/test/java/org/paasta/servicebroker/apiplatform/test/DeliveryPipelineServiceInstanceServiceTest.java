@@ -2,6 +2,7 @@ package org.paasta.servicebroker.apiplatform.test;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -14,7 +15,12 @@ import org.paasta.servicebroker.apiplatform.model.RequestFixture;
 import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
 import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAdminService;
 import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineServiceInstanceService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +32,8 @@ import static org.mockito.Mockito.when;
 /**
  * Created by user on 2017-09-12.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource("classpath:test.properties")
 public class DeliveryPipelineServiceInstanceServiceTest {
 
     @InjectMocks
@@ -34,12 +42,34 @@ public class DeliveryPipelineServiceInstanceServiceTest {
     @Mock
     DeliveryPipelineAdminService deliveryPipelineAdminService;
 
+
+    @Value("${paasta.delivery.pipeline.api.url}")
+    private String apiUrl;
+    @Value("${paasta.delivery.pipeline.api.username}")
+    private String apiUsername;
+    @Value("${paasta.delivery.pipeline.api.password}")
+    private String apiPassword;
+    @Value("${service.dashboard.url}")
+    private String dashboardUrl;
+
+
+    private MockRestServiceServer mockServer;
+
+    @Mock
+    private RestTemplate restTemplate;
+
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-//        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "dashboard_url", TestConstants.DASHBOARD_URL);
-//        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "param_owner", TestConstants.PARAM_KEY_OWNER);
+        ReflectionTestUtils.setField(deliveryPipelineServiceInstanceService, "dashboardUrl", dashboardUrl);
+
+        mockServer = MockRestServiceServer.createServer(restTemplate);
+
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUrl", apiUrl);
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUsername", apiUsername);
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiPassword", apiPassword);
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "restTemplate", restTemplate);
 
     }
 
