@@ -7,9 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
 import org.paasta.servicebroker.apiplatform.common.TestConstants;
 import org.paasta.servicebroker.apiplatform.model.JpaRepositoryFixture;
+import org.paasta.servicebroker.apiplatform.model.RequestFixture;
 import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
 import org.paasta.servicebroker.deliverypipeline.model.JpaServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.repo.JpaServiceInstanceRepository;
@@ -17,23 +19,26 @@ import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAd
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestMatcher;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by user on 2017-09-13.
@@ -62,7 +67,7 @@ public class DeliveryPipelineAdminServiceTest {
     private String dashboardUrl;
 
 
-
+    @Mock
     private MockRestServiceServer mockServer;
 
     @Mock
@@ -88,11 +93,12 @@ public class DeliveryPipelineAdminServiceTest {
         ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
         when(restTemplate.exchange(
                 Matchers.anyString(),
-                Matchers.any(HttpMethod.class),
+                any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
                 Matchers.<Class<Map>>any())).thenReturn(responseEntity);
 
-        deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        assertEquals(result,true);
 
     }
 
@@ -143,16 +149,18 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_deleteDashboard() throws Exception {
-
         ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-        ResponseEntity responseEntity = new ResponseEntity<String>(HttpStatus.OK);
+        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
+        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
         when(restTemplate.exchange(
                 Matchers.anyString(),
-                Matchers.any(HttpMethod.class),
+                any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
-                Matchers.<Class<String>>any())).thenReturn(ResponseEntity.ok("ok"));
-
-        deliveryPipelineAdminService.deleteDashboard(serviceInstance);
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+        boolean result =  deliveryPipelineAdminService.deleteDashboard(serviceInstance);
+        assertEquals(result,true);
     }
 
 

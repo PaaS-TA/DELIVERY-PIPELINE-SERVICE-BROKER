@@ -13,7 +13,7 @@ public class ServiceDefinitionFixture {
         return new ServiceDefinition(
                 TestConstants.SERVICEDEFINITION_ID,
                 TestConstants.SERVICEDEFINITION_NAME,
-                "A paasta source control service for application development.provision parameters : parameters {owner : owner}",
+                "A delivery pipeline service for application development.provision parameters : parameters {owner : owner}",
                 false, // bindable
                 false, // updatable
                 Arrays.asList(

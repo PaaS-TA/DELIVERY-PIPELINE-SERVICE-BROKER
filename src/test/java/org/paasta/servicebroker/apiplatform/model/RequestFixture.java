@@ -9,10 +9,9 @@ import java.util.Map;
 public class RequestFixture {
 
 
-    public static Map<String, Object> getParameters(String num) {
-
+    public static Map<String, Object> getParameters() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("owner", "testuser"+num);
+        parameters.put(TestConstants.PARAM_KEY_OWNER, TestConstants.PARAM_KEY_OWNER_VALUE);
         return parameters;
     }
 
@@ -35,22 +34,10 @@ public class RequestFixture {
                 service.getPlans().get(0).getId(),
                 TestConstants.ORG_GUID_001,
                 TestConstants.SPACE_GUID_001,
-                getParameters("001")
+                getParameters()
         );
     }
 
-    public static CreateServiceInstanceRequest getCreateServiceInstanceRequest2() {
-
-        ServiceDefinition service = ServiceDefinitionFixture.getService();
-
-        return new CreateServiceInstanceRequest(
-                service.getId(),
-                service.getPlans().get(0).getId(),
-                TestConstants.ORG_GUID_002,
-                TestConstants.SPACE_GUID_002,
-                getParameters("002")
-        );
-    }
 
     public static CreateServiceInstanceBindingRequest getCreateServiceInstanceBindingRequest() {
 
