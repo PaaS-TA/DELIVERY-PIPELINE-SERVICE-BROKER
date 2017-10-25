@@ -18,5 +18,8 @@ public class DeliveryPipelineServiceException extends ServiceBrokerException {
 	public DeliveryPipelineServiceException(String message) {
 		super(message);
 	}
+	public DeliveryPipelineServiceException(String message, Throwable cause) {
+		super(message, cause);
+	}
 	
 }

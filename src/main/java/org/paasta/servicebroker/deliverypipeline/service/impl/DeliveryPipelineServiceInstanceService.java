@@ -39,8 +39,28 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
     @Override
     public ServiceInstance createServiceInstance(CreateServiceInstanceRequest request)
             throws ServiceInstanceExistsException, ServiceBrokerException {
+
         logger.debug("DeliveryPipelineServiceInstanceService CLASS createServiceInstance");
+
+
+
+        if (request.getParameters() == null || request.getParameters().isEmpty() ||
+                !(request.getParameters().containsKey(TOKEN_OWNER) && request.getParameters().containsKey(TOKEN_OWNER))) {
+            logger.debug("Required " + TOKEN_OWNER + " parameter.\nTIP: cf create-service SERVICE PLAN SERVICE_INSTANCE -c '{\"" + TOKEN_OWNER + "\": \"username\"}'");
+            throw new ServiceBrokerException("Required " + TOKEN_OWNER + " parameter.\nTIP: cf create-service SERVICE PLAN SERVICE_INSTANCE -c '{\"" + TOKEN_OWNER + "\": \"username\"}'");
+        }
+
+
+        // 서비스 인스턴스 체크
+        ServiceInstance serviceInstance = deliveryPipelineAdminService.findById(request.getServiceInstanceId());
+
+        if (serviceInstance != null) {
+            logger.debug("This instances already has one or more service instances.", request.getServiceInstanceId());
+            throw new ServiceInstanceExistsException(new ServiceInstance(request));
+        }
+
         // TODO dashboard
+        // 서비스 인스턴스 Guid Check
         ServiceInstance instance = deliveryPipelineAdminService.findByOrganizationGuid(request.getOrganizationGuid());
 
         if (instance != null) {
@@ -48,26 +68,11 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
             throw new ServiceBrokerException("This organization already has one or more service instances.");
         }
 
-        instance = deliveryPipelineAdminService.findById(request.getServiceInstanceId());
-
-        if (deliveryPipelineAdminService.isExistsService(instance)) {
-            // ensure the instance is empty
-            logger.debug("{} is exist", request.getServiceInstanceId());
-            throw new ServiceInstanceExistsException(instance);
-        }
-
-        Map<String, Object> params = request.getParameters();
-        logger.info(params.toString());
-        if (params == null || !params.containsKey(TOKEN_OWNER)) {
-            throw new ServiceBrokerException("Required " + TOKEN_OWNER + " parameter.\nTIP: cf create-service SERVICE PLAN SERVICE_INSTANCE -c '{\"" + TOKEN_OWNER + "\": \"username\"}'");
-        }
-
-        String owner = (String) params.get(TOKEN_OWNER);
 
         String serviceInstanceDashboardUrl = dashboardUrl.replace(TOKEN_SUID, request.getServiceInstanceId());
         ServiceInstance result = new ServiceInstance(request).withDashboardUrl(serviceInstanceDashboardUrl);
 
-        deliveryPipelineAdminService.createDashboard(result, owner);
+        deliveryPipelineAdminService.createDashboard(result, request.getParameters().get(TOKEN_OWNER).toString());
         deliveryPipelineAdminService.save(result);
 
         return result;

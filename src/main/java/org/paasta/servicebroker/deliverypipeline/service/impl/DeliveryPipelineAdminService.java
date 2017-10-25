@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
@@ -56,7 +53,6 @@ public class DeliveryPipelineAdminService {
     }
 
 
-
     public ServiceInstance findById(String id) {
         JpaServiceInstance newJpaServiceInstance = jpaServiceInstanceRepository.findOne(id);
 
@@ -98,22 +94,65 @@ public class DeliveryPipelineAdminService {
     }
 
 
-    public void deleteDashboard(ServiceInstance serviceInstance) throws DeliveryPipelineServiceException {
+    public boolean deleteDashboard(ServiceInstance serviceInstance) throws DeliveryPipelineServiceException {
         try {
-            send(apiUrl + "/serviceInstance/" + serviceInstance.getServiceInstanceId(), HttpMethod.DELETE);
+
+            String reqUrl = apiUrl + "/serviceInstance/" + serviceInstance.getServiceInstanceId();
+
+            if (apiUsername.isEmpty()) this.authorization = "";
+            else
+                this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
+
+            HttpHeaders reqHeaders = new HttpHeaders();
+            if (!"".equals(authorization)) reqHeaders.add(AUTHORIZATION_HEADER_KEY, authorization);
+            reqHeaders.add(CONTENT_TYPE_HEADER_KEY, "application/json");
+
+            HttpEntity<Object> reqEntity = new HttpEntity<>(reqHeaders);
+
+            logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
+            ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, HttpMethod.DELETE, reqEntity, String.class);
+            logger.info("send :: Response Status: {}", resEntity.getStatusCode());
+
+            if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
+                return true;
+            } else {
+                return false;
+            }
+
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
-    public void createDashboard(ServiceInstance serviceInstance, String owner) throws DeliveryPipelineServiceException {
+    public boolean createDashboard(ServiceInstance serviceInstance, String owner) throws DeliveryPipelineServiceException {
         try {
             Map params = new HashMap();
 
             params.put("id", serviceInstance.getServiceInstanceId());
             params.put("owner", owner);
 
-            send(apiUrl + "/serviceInstance", HttpMethod.POST, params);
+            String reqUrl = apiUrl + "/serviceInstance";
+
+            if (apiUsername.isEmpty()) this.authorization = "";
+            else
+                this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
+
+            HttpHeaders reqHeaders = new HttpHeaders();
+            if (!"".equals(authorization)) reqHeaders.add(AUTHORIZATION_HEADER_KEY, authorization);
+            reqHeaders.add(CONTENT_TYPE_HEADER_KEY, "application/json");
+
+            HttpEntity<Object> reqEntity = new HttpEntity<>(params, reqHeaders);
+
+            logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
+            ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, HttpMethod.POST, reqEntity, String.class);
+            logger.info("send :: Response Status: {}", resEntity.getStatusCode());
+
+            if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
+                return true;
+            } else {
+                return false;
+            }
+
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -128,37 +167,12 @@ public class DeliveryPipelineAdminService {
 
     public void send(String reqUrl, HttpMethod httpMethod, Object bodyObject) {
 
-        if (apiUsername.isEmpty()) this.authorization = "";
-        else
-            this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
 
-        HttpHeaders reqHeaders = new HttpHeaders();
-        if (!"".equals(authorization)) reqHeaders.add(AUTHORIZATION_HEADER_KEY, authorization);
-        reqHeaders.add(CONTENT_TYPE_HEADER_KEY, "application/json");
-
-        HttpEntity<Object> reqEntity = new HttpEntity<>(bodyObject, reqHeaders);
-
-        logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
-        ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, httpMethod, reqEntity, String.class);
-        logger.info("send :: Response Status: {}", resEntity.getStatusCode());
     }
 
     public void send(String reqUrl, HttpMethod httpMethod) {
 
 
-        if (apiUsername.isEmpty()) this.authorization = "";
-        else
-            this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
-
-        HttpHeaders reqHeaders = new HttpHeaders();
-        if (!"".equals(authorization)) reqHeaders.add(AUTHORIZATION_HEADER_KEY, authorization);
-        reqHeaders.add(CONTENT_TYPE_HEADER_KEY, "application/json");
-
-        HttpEntity<Object> reqEntity = new HttpEntity<>(reqHeaders);
-
-        logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
-        ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, httpMethod, reqEntity, String.class);
-        logger.info("send :: Response Status: {}", resEntity.getStatusCode());
     }
 }
 
