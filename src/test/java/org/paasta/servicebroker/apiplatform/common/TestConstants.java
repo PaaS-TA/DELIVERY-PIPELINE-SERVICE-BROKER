@@ -36,6 +36,6 @@ public class TestConstants {
     public static final String DB_SERVICEID_FILED_NAME  = "service_id";
 
 
-
+    public static final String BINDING_ID = "service_instance_binding_id";
 
 }

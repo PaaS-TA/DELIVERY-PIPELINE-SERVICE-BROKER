@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * DELIVERY-PIPELINE-SERVICE-BROKER
+ *
  * Created by user on 2017-09-12.
  */
 @RunWith(SpringJUnit4ClassRunner.class)

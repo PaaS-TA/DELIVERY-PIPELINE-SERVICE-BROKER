@@ -13,10 +13,9 @@ import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineSe
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * paastaSourceControlServiceBroker
- * org.paasta.servicebroker.sourcecontrol.service.impl
+ * DELIVERY-PIPELINE-SERVICE-BROKER
  *
- * 형상관리 - binding 지원 안함.
+ * 배포파이프라인 - binding 지원 안함.
  *
  * Created by user on 2017-09-12.
  */
