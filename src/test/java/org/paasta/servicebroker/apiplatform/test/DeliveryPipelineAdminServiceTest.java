@@ -130,7 +130,22 @@ public class DeliveryPipelineAdminServiceTest {
     }
 
     @Test
-    public void test_createDashboard() throws Exception {
+    public void test_createDashboard1() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        assertEquals(result,true);
+
+    }
+    @Test
+    public void test_createDashboard2() throws Exception {
+        ReflectionTestUtils.setField(deliveryPipelineAdminService, "apiUsername", "");
         ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
         ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
         when(restTemplate.exchange(
