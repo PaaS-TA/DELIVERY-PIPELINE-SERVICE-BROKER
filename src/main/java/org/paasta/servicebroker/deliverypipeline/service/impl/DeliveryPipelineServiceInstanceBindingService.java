@@ -1,19 +1,17 @@
 package org.paasta.servicebroker.deliverypipeline.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openpaas.servicebroker.exception.ServiceBrokerException;
 import org.openpaas.servicebroker.exception.ServiceInstanceBindingExistsException;
 import org.openpaas.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.openpaas.servicebroker.model.DeleteServiceInstanceBindingRequest;
-//import org.openpaas.servicebroker.model.ServiceInstance;
 import org.openpaas.servicebroker.model.ServiceInstanceBinding;
 import org.openpaas.servicebroker.service.ServiceInstanceBindingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+//import org.openpaas.servicebroker.model.ServiceInstance;
 
 /**
  *  

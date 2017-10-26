@@ -1,15 +1,15 @@
 package org.paasta.servicebroker.deliverypipeline.config;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.openpaas.servicebroker.model.Catalog;
 import org.openpaas.servicebroker.model.Plan;
 import org.openpaas.servicebroker.model.ServiceDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class CatalogConfig {

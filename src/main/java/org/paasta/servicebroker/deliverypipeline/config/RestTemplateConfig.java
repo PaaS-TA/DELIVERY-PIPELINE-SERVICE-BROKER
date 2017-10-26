@@ -5,12 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * paastaDeliveryPipelineApi
- * paasta.delivery.pipeline.ui.config
+ * DELIVERY-PIPELINE-SERVICE-BROKER
  *
- * @author REX
- * @version 1.0
- * @since 5 /10/2017
+ * Created by user on 2017-10-23.
  */
 @Configuration
 public class RestTemplateConfig {
