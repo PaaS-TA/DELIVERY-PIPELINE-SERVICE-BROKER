@@ -92,8 +92,15 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_findById_case() throws Exception {
-        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaRepositoryFixture = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
         jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+        jpaServiceInstance.setPlanId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setServiceDefinitionId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setSpaceGuid(jpaRepositoryFixture.getSpaceGuid());
+        jpaServiceInstance.setOrganizationGuid(jpaRepositoryFixture.getOrganizationGuid());
+        jpaServiceInstance.setDashboardUrl(jpaRepositoryFixture.getDashboardUrl());
+
         when(jpaServiceInstanceRepository.findOne(anyString())).thenReturn(jpaServiceInstance);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findById(jpaServiceInstance.getServiceInstanceId());
         assertThat(serviceInstance.getServiceInstanceId(), is(TestConstants.SV_INSTANCE_ID_001));
@@ -109,7 +116,15 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_findByOrgGuid() throws Exception {
-        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaRepositoryFixture = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
+        jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+        jpaServiceInstance.setPlanId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setServiceDefinitionId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setSpaceGuid(jpaRepositoryFixture.getSpaceGuid());
+        jpaServiceInstance.setOrganizationGuid(jpaRepositoryFixture.getOrganizationGuid());
+        jpaServiceInstance.setDashboardUrl(jpaRepositoryFixture.getDashboardUrl());
+
         when(jpaServiceInstanceRepository.findByOrganizationGuid(anyString())).thenReturn(jpaServiceInstance);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(jpaServiceInstance.getOrganizationGuid());
         assertThat(serviceInstance.getServiceInstanceId(), is(jpaServiceInstance.getServiceInstanceId()));
@@ -121,7 +136,15 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_findByOrgGuid_case_null() throws Exception {
-        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaRepositoryFixture = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
+        jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+        jpaServiceInstance.setPlanId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setServiceDefinitionId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setSpaceGuid(jpaRepositoryFixture.getSpaceGuid());
+        jpaServiceInstance.setOrganizationGuid(jpaRepositoryFixture.getOrganizationGuid());
+        jpaServiceInstance.setDashboardUrl(jpaRepositoryFixture.getDashboardUrl());
+
         when(jpaServiceInstanceRepository.findByOrganizationGuid(anyString())).thenReturn(null);
         ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(jpaServiceInstance.getOrganizationGuid());
         assertThat(serviceInstance, is(nullValue()));
@@ -159,8 +182,15 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_save() throws Exception{
+        JpaServiceInstance jpaRepositoryFixture = JpaRepositoryFixture.getJpaServiceInstance();
+        JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
+        jpaServiceInstance.setServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+        jpaServiceInstance.setPlanId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setServiceDefinitionId(jpaRepositoryFixture.getPlanId());
+        jpaServiceInstance.setSpaceGuid(jpaRepositoryFixture.getSpaceGuid());
+        jpaServiceInstance.setOrganizationGuid(jpaRepositoryFixture.getOrganizationGuid());
+        jpaServiceInstance.setDashboardUrl(jpaRepositoryFixture.getDashboardUrl());
 
-        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
         when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
         deliveryPipelineAdminService.save(ServiceInstanceFixture.getServiceInstance());
         verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
