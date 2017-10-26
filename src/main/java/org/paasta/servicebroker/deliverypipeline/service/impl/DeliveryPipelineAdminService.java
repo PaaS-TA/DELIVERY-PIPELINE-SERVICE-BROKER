@@ -157,16 +157,6 @@ public class DeliveryPipelineAdminService {
         return new DeliveryPipelineServiceException(e.getLocalizedMessage());
     }
 
-
-    public void send(String reqUrl, HttpMethod httpMethod, Object bodyObject) {
-
-
-    }
-
-    public void send(String reqUrl, HttpMethod httpMethod) {
-
-
-    }
 }
 
 //	public boolean isExistsUser(String userId){
