@@ -10,7 +10,9 @@ import org.mockito.MockitoAnnotations;
 import org.openpaas.servicebroker.exception.ServiceBrokerException;
 import org.openpaas.servicebroker.exception.ServiceInstanceExistsException;
 import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
+import org.openpaas.servicebroker.model.DeleteServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
+import org.openpaas.servicebroker.model.UpdateServiceInstanceRequest;
 import org.paasta.servicebroker.apiplatform.common.TestConstants;
 import org.paasta.servicebroker.apiplatform.model.RequestFixture;
 import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
@@ -29,15 +31,19 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 /**
  * Created by user on 2017-09-12.
@@ -66,6 +72,8 @@ public class DeliveryPipelineServiceInstanceServiceTest {
 
 
     private MockRestServiceServer mockServer;
+
+    public static final String TOKEN_SUID = "[SUID]";
 
     @Mock
     private RestTemplate restTemplate;
@@ -137,6 +145,7 @@ public class DeliveryPipelineServiceInstanceServiceTest {
         ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
 
         when(deliveryPipelineAdminService.findById(anyString())).thenReturn(serviceInstance);
+        when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(null);
 
         assertThatThrownBy(() -> deliveryPipelineServiceInstanceService.createServiceInstance(request))
                 .isInstanceOf(ServiceInstanceExistsException.class).hasMessageContaining("ServiceInstance with the given ID already exists");
@@ -152,117 +161,141 @@ public class DeliveryPipelineServiceInstanceServiceTest {
         when(deliveryPipelineAdminService.findById(anyString())).thenReturn(null);
         when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(serviceInstance);
 
+
         assertThatThrownBy(() -> deliveryPipelineServiceInstanceService.createServiceInstance(request))
-                .isInstanceOf(ServiceBrokerException.class).hasMessageContaining("more service instances");
+                .isInstanceOf(ServiceBrokerException.class).hasMessageContaining("This organization already has one or more service instances.");
 
     }
 
     @Test
-    public void test_createServiceInstance_case1() throws Exception {
+    public void test_getServiceInstance_case1() throws Exception {
 
-        //인스턴스 생성
-        //ORG 등록 안되어 있고, SPACE 등록 안되어 있음
-        //서비스는 등록되어 있음
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
 
-//        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-//        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
-//        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
-//
-//        when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(serviceInstance);
-//        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(null);
-//        when(deliveryPipelineAdminService.isExistsService(serviceInstance)).thenReturn(false);
-//
-//        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
-//        when(restTemplate.exchange(
-//                Matchers.anyString(),
-//                any(HttpMethod.class),
-//                Matchers.<HttpEntity<?>>any(),
-//                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
-//        when(deliveryPipelineAdminService.createDashboard(any(ServiceInstance.class),anyString())).thenReturn(false);
-//
-//        doNothing().when(deliveryPipelineAdminService).save(any(ServiceInstance.class));
-//
-//
-//        deliveryPipelineServiceInstanceService.createServiceInstance(request);
-//
-//
-//        verify(deliveryPipelineAdminService).findByOrganizationGuid(request.getOrganizationGuid());
-//        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
-//        verify(deliveryPipelineAdminService).isExistsService(any(ServiceInstance.class));
-//        verify(deliveryPipelineAdminService).createDashboard(any(ServiceInstance.class), request.getParameters().get(TestConstants.PARAM_KEY_OWNER).toString());
-//        verify(deliveryPipelineAdminService).save(serviceInstance);
+        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(serviceInstance);
+        ServiceInstance result = deliveryPipelineServiceInstanceService.getServiceInstance(serviceInstance.getServiceInstanceId());
+
+        assertThat(result.getServiceInstanceId(), is(serviceInstance.getServiceInstanceId()));
+        assertThat(result.getServiceDefinitionId(), is(serviceInstance.getServiceDefinitionId()));
+        assertThat(result.getOrganizationGuid(), is(serviceInstance.getOrganizationGuid()));
+        assertThat(result.getPlanId(), is(serviceInstance.getPlanId()));
+        assertThat(result.getSpaceGuid(), is(serviceInstance.getSpaceGuid()));
+
+    }
+
+
+    @Test
+    public void test_createServiceInstance_case() throws Exception {
+        /*
+        * 인스턴스가 있을 때 삭제 요청을 할 경우
+        */
+
+        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
+        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+
+        when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(null);
+        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(null);
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+        when(deliveryPipelineAdminService.createDashboard(any(ServiceInstance.class),anyString())).thenReturn(true);
+
+        doNothing().when(deliveryPipelineAdminService).save(any(ServiceInstance.class));
+
+
+        deliveryPipelineServiceInstanceService.createServiceInstance(request);
+
+
+
+        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
+        verify(deliveryPipelineAdminService).findByOrganizationGuid(request.getOrganizationGuid());
+        verify(deliveryPipelineAdminService).createDashboard(any(ServiceInstance.class), anyString());
+        verify(deliveryPipelineAdminService).save(any(ServiceInstance.class));
+
+    }
+
+
+    @Test
+    public void test_deleteServiceInstance_case1() throws Exception {
+       /*
+        * 인스턴스가 있을때 삭제요청
+        */
+
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        DeleteServiceInstanceRequest request = RequestFixture.getDeleteServiceInstanceRequest();
+        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(serviceInstance);
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+        when(deliveryPipelineAdminService.deleteDashboard(any(ServiceInstance.class))).thenReturn(true);
+        doNothing().when(deliveryPipelineAdminService).delete(anyString());
+
+
+        ServiceInstance result =  deliveryPipelineServiceInstanceService.deleteServiceInstance(request);
+
+        assertThat(result.getServiceInstanceId(), is(serviceInstance.getServiceInstanceId()));
+        assertThat(result.getServiceDefinitionId(), is(serviceInstance.getServiceDefinitionId()));
+        assertThat(result.getPlanId(), is(serviceInstance.getPlanId()));
+        assertThat(result.getOrganizationGuid(), is(serviceInstance.getOrganizationGuid()));
+        assertThat(result.getSpaceGuid(), is(serviceInstance.getSpaceGuid()));
+
+
+        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
+        verify(deliveryPipelineAdminService).deleteDashboard(serviceInstance);
+        verify(deliveryPipelineAdminService).delete(anyString());
 
     }
 
     @Test
-    public void test_createServiceInstance_case2() throws Exception {
+    public void test_deleteServiceInstance_case2() throws Exception {
+        /*
+        * 인스턴스가 없는데 삭제 요청을 할 경우
+        */
 
-        //인스턴스 생성
-        //ORG 등록 안되어 있고, SPACE 등록 안되어 있음
-        //서비스는 등록되어 있음
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        DeleteServiceInstanceRequest request = RequestFixture.getDeleteServiceInstanceRequest();
+        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(null);
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+        when(deliveryPipelineAdminService.deleteDashboard(any(ServiceInstance.class))).thenReturn(true);
+        doNothing().when(deliveryPipelineAdminService).delete(anyString());
 
-//        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-//        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
-//        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
-//
-//        when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(null);
-//        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(serviceInstance);
-//        when(deliveryPipelineAdminService.isExistsService(serviceInstance)).thenReturn(false);
-//
-//        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
-//        when(restTemplate.exchange(
-//                Matchers.anyString(),
-//                any(HttpMethod.class),
-//                Matchers.<HttpEntity<?>>any(),
-//                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
-//        when(deliveryPipelineAdminService.createDashboard(any(ServiceInstance.class),anyString())).thenReturn(false);
-//
-//        doNothing().when(deliveryPipelineAdminService).save(any(ServiceInstance.class));
-//
-//
-//        deliveryPipelineServiceInstanceService.createServiceInstance(request);
-//
-//
-//        verify(deliveryPipelineAdminService).findByOrganizationGuid(request.getOrganizationGuid());
-//        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
-//        verify(deliveryPipelineAdminService).isExistsService(any(ServiceInstance.class));
-//        verify(deliveryPipelineAdminService).createDashboard(any(ServiceInstance.class), request.getParameters().get(TestConstants.PARAM_KEY_OWNER).toString());
-//        verify(deliveryPipelineAdminService).save(serviceInstance);
+
+        ServiceInstance result =  deliveryPipelineServiceInstanceService.deleteServiceInstance(request);
+
+        assertThat(result, is(nullValue()));
+
+
+        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
+        verify(deliveryPipelineAdminService,times(0)).deleteDashboard(serviceInstance);
+        verify(deliveryPipelineAdminService,times(0)).delete(anyString());
 
     }
 
+
+
+
+
+
+    //----------------[ updateServiceInstance Test]
     @Test
-    public void test_createServiceInstance_case3() throws Exception {
-
-        //인스턴스 생성
-        //ORG 등록 안되어 있고, SPACE 등록 안되어 있음
-        //서비스는 등록되어 있음
+    public void test_updateServiceInstance_case1() throws Exception {
 
 
-//        ServiceInstance serviceInstanceFixture = ServiceInstanceFixture.getServiceInstance();
-//        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
-//        when(restTemplate.exchange(
-//                Matchers.anyString(),
-//                Matchers.any(HttpMethod.class),
-//                Matchers.<HttpEntity<?>>any(),
-//                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
-//
-//        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
-//
-//        when(deliveryPipelineAdminService.findById(anyString())).thenReturn(null);
-//        when(deliveryPipelineAdminService.findByOrganizationGuid(anyString())).thenReturn(null);
-//        when(deliveryPipelineAdminService.isExistsService(serviceInstanceFixture)).thenReturn(true);
-//        doNothing().when(deliveryPipelineAdminService).createDashboard(serviceInstanceFixture, any(String.class));
-//
-//        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
-//        deliveryPipelineServiceInstanceService.createServiceInstance(request);
-//
-//        verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
-//        verify(deliveryPipelineAdminService).findByOrganizationGuid(request.getOrganizationGuid());
-//        verify(deliveryPipelineAdminService).createDashboard(serviceInstanceFixture, request.getParameters().get(TestConstants.PARAM_KEY_OWNER).toString());
-//        verify(deliveryPipelineServiceInstanceService).createServiceInstance(any(CreateServiceInstanceRequest.class));
+        UpdateServiceInstanceRequest request = RequestFixture.getUpdateServiceInstanceRequest();
 
+        assertThatThrownBy(() -> deliveryPipelineServiceInstanceService.updateServiceInstance(request))
+                .isInstanceOf(ServiceBrokerException.class).hasMessageContaining("Not Supported");
     }
-
 
 }

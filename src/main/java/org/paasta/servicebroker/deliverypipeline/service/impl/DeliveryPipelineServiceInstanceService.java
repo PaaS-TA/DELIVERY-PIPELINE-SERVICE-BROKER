@@ -9,15 +9,13 @@ import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
 import org.openpaas.servicebroker.model.DeleteServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
 import org.openpaas.servicebroker.model.UpdateServiceInstanceRequest;
-import org.paasta.servicebroker.deliverypipeline.exception.DeliveryPipelineServiceException;
 import org.openpaas.servicebroker.service.ServiceInstanceService;
+import org.paasta.servicebroker.deliverypipeline.exception.DeliveryPipelineServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * @author whalsrn0710@bluedigm.com
@@ -41,7 +39,6 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
             throws ServiceInstanceExistsException, ServiceBrokerException {
 
         logger.debug("DeliveryPipelineServiceInstanceService CLASS createServiceInstance");
-
 
 
         if (request.getParameters() == null || request.getParameters().isEmpty() ||
@@ -81,16 +78,18 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
 
     @Override
     public ServiceInstance getServiceInstance(String id) {
-        CreateServiceInstanceRequest createServiceInstanceRequest = new CreateServiceInstanceRequest();
-        createServiceInstanceRequest.setOrganizationGuid(id);
-        return new ServiceInstance(createServiceInstanceRequest);
+        return deliveryPipelineAdminService.findById(id);
     }
 
     @Override
     public ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest request) throws DeliveryPipelineServiceException {
         ServiceInstance instance = deliveryPipelineAdminService.findById(request.getServiceInstanceId());
+        if (instance == null) {
+            return null;
+        }
         deliveryPipelineAdminService.deleteDashboard(instance);
         deliveryPipelineAdminService.delete(instance.getServiceInstanceId());
+
         return instance;
     }
 

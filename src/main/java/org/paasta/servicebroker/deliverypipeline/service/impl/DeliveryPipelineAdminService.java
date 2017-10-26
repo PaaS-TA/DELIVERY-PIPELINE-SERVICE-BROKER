@@ -46,13 +46,6 @@ public class DeliveryPipelineAdminService {
 
     private String authorization;
 
-    public boolean isExistsService(ServiceInstance instance) {
-        if (instance == null) return false;
-
-        return (jpaServiceInstanceRepository.findByOrganizationGuid(instance.getOrganizationGuid()) != null);
-    }
-
-
     public ServiceInstance findById(String id) {
         JpaServiceInstance newJpaServiceInstance = jpaServiceInstanceRepository.findOne(id);
 

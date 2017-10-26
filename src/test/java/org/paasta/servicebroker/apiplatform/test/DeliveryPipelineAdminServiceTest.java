@@ -1,5 +1,6 @@
 package org.paasta.servicebroker.apiplatform.test;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,20 +88,7 @@ public class DeliveryPipelineAdminServiceTest {
 
     }
 
-    @Test
-    public void test_createDashboard() throws Exception {
-        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
-        when(restTemplate.exchange(
-                Matchers.anyString(),
-                any(HttpMethod.class),
-                Matchers.<HttpEntity<?>>any(),
-                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
 
-        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
-        assertEquals(result,true);
-
-    }
 
     @Test
     public void test_findById_case() throws Exception {
@@ -133,18 +121,40 @@ public class DeliveryPipelineAdminServiceTest {
 
     @Test
     public void test_findByOrgGuid_case_null() throws Exception {
+        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
         when(jpaServiceInstanceRepository.findByOrganizationGuid(anyString())).thenReturn(null);
-        ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(TestConstants.SV_INSTANCE_ID_001);
+        ServiceInstance serviceInstance = deliveryPipelineAdminService.findByOrganizationGuid(jpaServiceInstance.getOrganizationGuid());
         assertThat(serviceInstance, is(nullValue()));
     }
 
+    @Test
+    public void test_createDashboard() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.OK);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        assertEquals(result,true);
+
+    }
 
     @Test
-    public void test_isExistsService_false() throws Exception {
-        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
-        when(jpaServiceInstanceRepository.findByOrganizationGuid(jpaServiceInstance.getServiceInstanceId())).thenReturn(jpaServiceInstance);
-        boolean isExistsService = deliveryPipelineAdminService.isExistsService(ServiceInstanceFixture.getServiceInstance());
-        assertThat(isExistsService, is(false));
+    public void test_createDashboard_false() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.BAD_REQUEST);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        assertEquals(result,false);
+
     }
 
     @Test
@@ -163,6 +173,22 @@ public class DeliveryPipelineAdminServiceTest {
         assertEquals(result,true);
     }
 
+
+    @Test
+    public void test_deleteDashboard_false() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
+        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+
+        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.BAD_REQUEST);
+        when(restTemplate.exchange(
+                Matchers.anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+        boolean result =  deliveryPipelineAdminService.deleteDashboard(serviceInstance);
+        assertEquals(result,false);
+    }
 
     private void print() {
         logger.info("apiUrl : " + apiUrl);
