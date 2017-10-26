@@ -1,6 +1,5 @@
 package org.paasta.servicebroker.apiplatform.test;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,17 +19,16 @@ import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAd
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.RequestMatcher;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
@@ -39,7 +37,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * DELIVERY-PIPELINE-SERVICE-BROKER
@@ -145,17 +145,12 @@ public class DeliveryPipelineAdminServiceTest {
     }
 
     @Test
-    public void test_createDashboard_false() throws Exception {
-        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
-        ResponseEntity responseEntity = new ResponseEntity<Map>(HttpStatus.BAD_REQUEST);
-        when(restTemplate.exchange(
-                Matchers.anyString(),
-                any(HttpMethod.class),
-                Matchers.<HttpEntity<?>>any(),
-                Matchers.<Class<Map>>any())).thenReturn(responseEntity);
+    public void test_save() throws Exception{
 
-        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
-        assertEquals(result,false);
+        JpaServiceInstance jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+        when(jpaServiceInstanceRepository.save(any(JpaServiceInstance.class))).thenReturn(jpaServiceInstance);
+        deliveryPipelineAdminService.save(ServiceInstanceFixture.getServiceInstance());
+        verify(jpaServiceInstanceRepository).save(any(JpaServiceInstance.class));
 
     }
 
@@ -190,6 +185,15 @@ public class DeliveryPipelineAdminServiceTest {
                 Matchers.<Class<Map>>any())).thenReturn(responseEntity);
         boolean result =  deliveryPipelineAdminService.deleteDashboard(serviceInstance);
         assertEquals(result,false);
+    }
+
+    @Test
+    public void test_delete() throws Exception{
+
+        doNothing().when(jpaServiceInstanceRepository).delete(TestConstants.SV_INSTANCE_ID_001);
+        deliveryPipelineAdminService.delete(TestConstants.SV_INSTANCE_ID_001);
+        verify(jpaServiceInstanceRepository).delete(TestConstants.SV_INSTANCE_ID_001);
+
     }
 
     private void print() {
