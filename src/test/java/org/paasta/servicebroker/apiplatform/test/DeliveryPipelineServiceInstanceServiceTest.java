@@ -100,19 +100,6 @@ public class DeliveryPipelineServiceInstanceServiceTest {
         // CreateServiceInstanceRequest Parameter 유효성 체크
         CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
         request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
-        logger.debug("###############################################################");
-        logger.debug("###############################################################");
-        logger.debug("###############################################################");
-        logger.debug(request.getOrganizationGuid());
-        logger.debug(request.getPlanId());
-        logger.debug(request.getServiceDefinitionId());
-        logger.debug(request.getServiceInstanceId());
-        logger.debug(request.getSpaceGuid());
-        logger.debug(request.getParameters().toString());
-        logger.debug("###############################################################");
-        logger.debug("###############################################################");
-        logger.debug("###############################################################");
-
 
         // case 1. request.getParameters() == null
         logger.info("case 1. request.getParameters() == null");

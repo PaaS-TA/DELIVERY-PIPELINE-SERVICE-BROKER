@@ -13,6 +13,7 @@ import org.paasta.servicebroker.apiplatform.common.TestConstants;
 import org.paasta.servicebroker.apiplatform.model.JpaRepositoryFixture;
 import org.paasta.servicebroker.apiplatform.model.RequestFixture;
 import org.paasta.servicebroker.apiplatform.model.ServiceInstanceFixture;
+import org.paasta.servicebroker.deliverypipeline.exception.DeliveryPipelineServiceException;
 import org.paasta.servicebroker.deliverypipeline.model.JpaServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.repo.JpaServiceInstanceRepository;
 import org.paasta.servicebroker.deliverypipeline.service.impl.DeliveryPipelineAdminService;
@@ -31,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -181,6 +183,19 @@ public class DeliveryPipelineAdminServiceTest {
     }
 
     @Test
+    public void test_createDashboard3() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
+        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+
+
+        request.setParameters(null);
+        assertThatThrownBy(() -> deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER))
+                .isInstanceOf(DeliveryPipelineServiceException.class);
+    }
+
+
+    @Test
     public void test_save() throws Exception{
         JpaServiceInstance jpaRepositoryFixture = JpaRepositoryFixture.getJpaServiceInstance();
         JpaServiceInstance jpaServiceInstance = new JpaServiceInstance();
@@ -198,7 +213,7 @@ public class DeliveryPipelineAdminServiceTest {
     }
 
     @Test
-    public void test_deleteDashboard() throws Exception {
+    public void test_deleteDashboard1() throws Exception {
         ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
         CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
         request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
@@ -215,7 +230,7 @@ public class DeliveryPipelineAdminServiceTest {
 
 
     @Test
-    public void test_deleteDashboard_false() throws Exception {
+    public void test_deleteDashboard2() throws Exception {
         ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
         CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
         request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
@@ -229,6 +244,20 @@ public class DeliveryPipelineAdminServiceTest {
         boolean result =  deliveryPipelineAdminService.deleteDashboard(serviceInstance);
         assertEquals(result,false);
     }
+
+    @Test
+    public void test_deleteDashboard3() throws Exception {
+        ServiceInstance serviceInstance = ServiceInstanceFixture.getServiceInstance();
+        CreateServiceInstanceRequest request = RequestFixture.getCreateServiceInstanceRequest();
+        request.withServiceInstanceId(TestConstants.SV_INSTANCE_ID_001);
+
+
+        request.setParameters(null);
+        assertThatThrownBy(() -> deliveryPipelineAdminService.deleteDashboard(serviceInstance))
+                .isInstanceOf(DeliveryPipelineServiceException.class);
+    }
+
+
 
     @Test
     public void test_delete() throws Exception{
