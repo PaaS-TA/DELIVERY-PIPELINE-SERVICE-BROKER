@@ -62,3 +62,16 @@ dependencies {
     runtime("mysql:mysql-connector-java:5.1.27")
 
 }
+
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.7.9+"
+}
+
+test {
+    ignoreFailures=true
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacoco-overall.exec")
+    }
+}
