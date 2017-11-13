@@ -30,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -161,8 +162,7 @@ public class DeliveryPipelineAdminServiceTest {
                 any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
                 Matchers.<Class<Map>>any())).thenReturn(responseEntity);
-
-        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER,TestConstants.PARAM_SERVICE_TYPE_SHARED);
         assertEquals(result,true);
 
     }
@@ -177,7 +177,7 @@ public class DeliveryPipelineAdminServiceTest {
                 Matchers.<HttpEntity<?>>any(),
                 Matchers.<Class<Map>>any())).thenReturn(responseEntity);
 
-        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER);
+        boolean result =  deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER,TestConstants.PARAM_SERVICE_TYPE_DEDICATED);
         assertEquals(result,true);
 
     }
@@ -190,7 +190,7 @@ public class DeliveryPipelineAdminServiceTest {
 
 
         request.setParameters(null);
-        assertThatThrownBy(() -> deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER))
+        assertThatThrownBy(() -> deliveryPipelineAdminService.createDashboard(serviceInstance, TestConstants.PARAM_KEY_OWNER,TestConstants.PARAM_SERVICE_TYPE_SHARED))
                 .isInstanceOf(DeliveryPipelineServiceException.class);
     }
 

@@ -12,6 +12,10 @@ public class TestConstants {
     public static final String PARAM_KEY_OWNER = "owner";
     public static final String PARAM_KEY_OWNER_VALUE = "testuser001";
 
+    public static final String PARAM_SERVICE_TYPE_SHARED = "Shared";
+    public static final String PARAM_SERVICE_TYPE_DEDICATED = "Dedicated";
+
+
     public static final String SERVICEDEFINITION_ID = "delivery-pipeline-service-id";
     public static final String SERVICEDEFINITION_NAME = "delivery-pipeline";
     public static final String SERVICEDEFINITION_PLAN_ID = "default-plan-id";

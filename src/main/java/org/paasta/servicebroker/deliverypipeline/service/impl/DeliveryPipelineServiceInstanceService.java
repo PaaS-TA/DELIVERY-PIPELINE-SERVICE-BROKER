@@ -28,8 +28,8 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
     public static final String TOKEN_SUID = "[SUID]";
     public static final String TOKEN_OWNER = "owner";
 
-    public static final String shared = "a5930564-6212-11e7-907b-a6006ad3dba0";
-    public static final String dedicated = "a5930564-6212-11e7-907b-a6006ad3dba1";
+    public static final String shared = "a5930564-6212-11e7-907b-b6006ad3dps1";
+    public static final String dedicated = "a5930564-6212-11e7-907b-b6006ad3dps2";
 
     @Value("${service.dashboard.url}")
     private String dashboardUrl;
@@ -79,10 +79,10 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
         ServiceInstance result = new ServiceInstance(request).withDashboardUrl(serviceInstanceDashboardUrl);
 
         if (deliveryPipelineAdminService.createDashboard(result, request.getParameters().get(TOKEN_OWNER).toString(), serviceType)) {
+            deliveryPipelineAdminService.save(result);
+        } else {
             logger.debug("An error occurred while creating the service.", request.getServiceInstanceId());
             throw new ServiceBrokerException("An error occurred while creating the service.");
-        } else {
-            deliveryPipelineAdminService.save(result);
         }
 
         return result;
@@ -97,12 +97,15 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
     @Override
     public ServiceInstance deleteServiceInstance(DeleteServiceInstanceRequest request) throws DeliveryPipelineServiceException {
         ServiceInstance instance = deliveryPipelineAdminService.findById(request.getServiceInstanceId());
-        if (instance == null) {
-            return null;
-        }
-        deliveryPipelineAdminService.deleteDashboard(instance);
-        deliveryPipelineAdminService.delete(instance.getServiceInstanceId());
+        try {
+            if (instance == null) {
+                return null;
+            }
+            deliveryPipelineAdminService.deleteDashboard(instance);
+            deliveryPipelineAdminService.delete(instance.getServiceInstanceId());
+        }catch (Exception e){
 
+        }
         return instance;
     }
 

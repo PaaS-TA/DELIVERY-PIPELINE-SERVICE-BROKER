@@ -187,7 +187,7 @@ public class DeliveryPipelineServiceInstanceServiceTest {
                 any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
                 Matchers.<Class<Map>>any())).thenReturn(responseEntity);
-        when(deliveryPipelineAdminService.createDashboard(any(ServiceInstance.class),anyString())).thenReturn(true);
+        when(deliveryPipelineAdminService.createDashboard(any(ServiceInstance.class),anyString(),anyString())).thenReturn(true);
 
         doNothing().when(deliveryPipelineAdminService).save(any(ServiceInstance.class));
 
@@ -198,7 +198,7 @@ public class DeliveryPipelineServiceInstanceServiceTest {
 
         verify(deliveryPipelineAdminService).findById(request.getServiceInstanceId());
         verify(deliveryPipelineAdminService).findByOrganizationGuid(request.getOrganizationGuid());
-        verify(deliveryPipelineAdminService).createDashboard(any(ServiceInstance.class), anyString());
+        verify(deliveryPipelineAdminService).createDashboard(any(ServiceInstance.class), anyString(),anyString());
         verify(deliveryPipelineAdminService).save(any(ServiceInstance.class));
 
     }

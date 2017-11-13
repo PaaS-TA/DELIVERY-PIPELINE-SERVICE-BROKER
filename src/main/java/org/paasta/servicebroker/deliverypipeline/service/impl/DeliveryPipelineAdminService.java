@@ -143,6 +143,12 @@ public class DeliveryPipelineAdminService {
             logger.info("send :: Response Status: {}", resEntity.getStatusCode());
 
             if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
+
+                try{
+                    logger.info("send :: Response Body: {}", resEntity.getBody());
+                }catch (Exception e){
+
+                }
                 if (reqEntity.getBody() != null) {
                     return true;
                 } else {
