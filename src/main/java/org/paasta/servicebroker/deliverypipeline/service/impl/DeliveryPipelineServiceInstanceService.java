@@ -28,6 +28,9 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
     public static final String TOKEN_SUID = "[SUID]";
     public static final String TOKEN_OWNER = "owner";
 
+    public static final String shared = "a5930564-6212-11e7-907b-a6006ad3dba0";
+    public static final String dedicated = "a5930564-6212-11e7-907b-a6006ad3dba1";
+
     @Value("${service.dashboard.url}")
     private String dashboardUrl;
 
@@ -65,12 +68,22 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
             throw new ServiceBrokerException("This organization already has one or more service instances.");
         }
 
+        String serviceType = "";
+        if (request.getPlanId().equalsIgnoreCase(dedicated)) {
+            serviceType = "Dedicated";
+        } else {
+            serviceType = "Shared";
+        }
 
         String serviceInstanceDashboardUrl = dashboardUrl.replace(TOKEN_SUID, request.getServiceInstanceId());
         ServiceInstance result = new ServiceInstance(request).withDashboardUrl(serviceInstanceDashboardUrl);
 
-        deliveryPipelineAdminService.createDashboard(result, request.getParameters().get(TOKEN_OWNER).toString());
-        deliveryPipelineAdminService.save(result);
+        if (deliveryPipelineAdminService.createDashboard(result, request.getParameters().get(TOKEN_OWNER).toString(), serviceType)) {
+            logger.debug("An error occurred while creating the service.", request.getServiceInstanceId());
+            throw new ServiceBrokerException("An error occurred while creating the service.");
+        } else {
+            deliveryPipelineAdminService.save(result);
+        }
 
         return result;
     }

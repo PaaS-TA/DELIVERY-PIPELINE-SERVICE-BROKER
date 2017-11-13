@@ -117,14 +117,16 @@ public class DeliveryPipelineAdminService {
         }
     }
 
-    public boolean createDashboard(ServiceInstance serviceInstance, String owner) throws DeliveryPipelineServiceException {
+    public boolean createDashboard(ServiceInstance serviceInstance, String owner, String serviceType) throws DeliveryPipelineServiceException {
         try {
             Map params = new HashMap();
 
             params.put("id", serviceInstance.getServiceInstanceId());
             params.put("owner", owner);
+            params.put("service_type", serviceType);
 
             String reqUrl = apiUrl + "/serviceInstance";
+            logger.info("apiUrl : " + reqUrl);
 
             if (apiUsername.isEmpty()) this.authorization = "";
             else
@@ -137,11 +139,15 @@ public class DeliveryPipelineAdminService {
             HttpEntity<Object> reqEntity = new HttpEntity<>(params, reqHeaders);
 
             logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
-            ResponseEntity<String> resEntity = restTemplate.exchange(reqUrl, HttpMethod.POST, reqEntity, String.class);
+            ResponseEntity<Map> resEntity = restTemplate.exchange(reqUrl, HttpMethod.POST, reqEntity, Map.class);
             logger.info("send :: Response Status: {}", resEntity.getStatusCode());
 
             if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
-                return true;
+                if (reqEntity.getBody() != null) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -208,3 +214,4 @@ public class DeliveryPipelineAdminService {
 //		StringBuilder builder = new StringBuilder();
 //		return builder.toString();
 //	}
+
