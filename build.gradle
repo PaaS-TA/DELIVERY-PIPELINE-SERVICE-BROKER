@@ -20,7 +20,7 @@ apply plugin: 'war'
 ext {
   springBootCfServiceBrokerVersion = "2.4.0"
   springBootVersion = '1.5.2.RELEASE'
-  baseName = 'paas-ta-delivery-pipline-broker'
+  baseName = 'delivery-pipline-service-broker'
   version =  '2.4'
   
   hibernateValidatorVersion = '5.1.0.Final'
