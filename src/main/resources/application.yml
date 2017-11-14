@@ -1,0 +1,44 @@
+server:
+  port: SERVER_PORT
+
+spring:
+  application:
+    name: delivery-pipeline-service-broker
+  datasource:
+    url: jdbc:mysql://YOUR_DB_ADDRESS:3306/broker?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: YOUR_DB_ID
+    password: YOUR_DB_PASSWORD
+  jpa:
+    hibernate:
+      ddl-auto: none
+      database: mysql
+      show-sql: true
+
+
+logging:
+  level:
+    ROOT:
+      org:
+        openpaas:
+          servicebroker:
+            controller: DEBUG
+        paasta:
+          servicebroker:
+            deliverypipeline:
+              service: DEBUG
+
+service:
+  dashboard:
+    url: http://YOUR_DASHBOARD_URL:8080/dashboard/[SUID]/
+
+
+paasta:
+  delivery:
+    pipeline:
+      api:
+        url: http://YOUR_COMMON_API_URL:8080
+        username:
+        password:
+
+
+
