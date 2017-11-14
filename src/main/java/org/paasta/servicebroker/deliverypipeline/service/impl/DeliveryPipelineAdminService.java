@@ -149,7 +149,7 @@ public class DeliveryPipelineAdminService {
                 }catch (Exception e){
 
                 }
-                if (reqEntity.getBody() != null) {
+                if (resEntity.getBody() != null) {
                     return true;
                 } else {
                     return false;

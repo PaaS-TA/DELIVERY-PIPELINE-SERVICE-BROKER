@@ -67,12 +67,14 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
             logger.debug("This organization already has one or more service instances.", request.getServiceInstanceId());
             throw new ServiceBrokerException("This organization already has one or more service instances.");
         }
-
+        String errMsg = "";
         String serviceType = "";
         if (request.getPlanId().equalsIgnoreCase(dedicated)) {
             serviceType = "Dedicated";
+            errMsg = "Due to the lack of a dedicated server that can be allocated, the service can not be created.";
         } else {
             serviceType = "Shared";
+            errMsg = "An error occurred while creating the service.";
         }
 
         String serviceInstanceDashboardUrl = dashboardUrl.replace(TOKEN_SUID, request.getServiceInstanceId());
@@ -81,8 +83,8 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
         if (deliveryPipelineAdminService.createDashboard(result, request.getParameters().get(TOKEN_OWNER).toString(), serviceType)) {
             deliveryPipelineAdminService.save(result);
         } else {
-            logger.debug("An error occurred while creating the service.", request.getServiceInstanceId());
-            throw new ServiceBrokerException("An error occurred while creating the service.");
+            logger.debug(errMsg, request.getServiceInstanceId());
+            throw new ServiceBrokerException(errMsg);
         }
 
         return result;
@@ -103,7 +105,7 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
             }
             deliveryPipelineAdminService.deleteDashboard(instance);
             deliveryPipelineAdminService.delete(instance.getServiceInstanceId());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return instance;
