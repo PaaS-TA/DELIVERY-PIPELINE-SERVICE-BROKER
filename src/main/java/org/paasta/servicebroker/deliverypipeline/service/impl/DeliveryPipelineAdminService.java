@@ -3,6 +3,7 @@ package org.paasta.servicebroker.deliverypipeline.service.impl;
 import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.exception.DeliveryPipelineServiceException;
+import org.paasta.servicebroker.deliverypipeline.model.CiInfo;
 import org.paasta.servicebroker.deliverypipeline.model.JpaServiceInstance;
 import org.paasta.servicebroker.deliverypipeline.repo.JpaServiceInstanceRepository;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -144,9 +146,9 @@ public class DeliveryPipelineAdminService {
 
             if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
 
-                try{
+                try {
                     logger.info("send :: Response Body: {}", resEntity.getBody());
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 if (resEntity.getBody() != null) {
@@ -160,6 +162,42 @@ public class DeliveryPipelineAdminService {
 
         } catch (Exception e) {
             throw handleException(e);
+        }
+    }
+
+
+    public Map initCiInfos(List<CiInfo> ciInfos) {
+        try {
+            Map params = new HashMap();
+
+            String reqUrl = apiUrl + "/serviceinit/ciinfo";
+            logger.info("apiUrl : " + reqUrl);
+
+            if (apiUsername.isEmpty()) this.authorization = "";
+            else
+                this.authorization = "Basic " + Base64Utils.encodeToString((apiUsername + ":" + apiPassword).getBytes(StandardCharsets.UTF_8));
+
+            HttpHeaders reqHeaders = new HttpHeaders();
+            if (!"".equals(authorization)) reqHeaders.add(AUTHORIZATION_HEADER_KEY, authorization);
+            reqHeaders.add(CONTENT_TYPE_HEADER_KEY, "application/json");
+
+            HttpEntity<Object> reqEntity = new HttpEntity<>(ciInfos, reqHeaders);
+
+            logger.info("POST >> Request: {}, {baseUrl} : {}, Content-Type: {}", HttpMethod.POST, reqUrl, reqHeaders.get(CONTENT_TYPE_HEADER_KEY));
+            ResponseEntity<Map> resEntity = restTemplate.exchange(reqUrl, HttpMethod.POST, reqEntity, Map.class);
+            logger.info("send :: Response Status: {}", resEntity.getStatusCode());
+
+            if (resEntity.getStatusCode().equals(HttpStatus.OK)) {
+                Map result = resEntity.getBody();
+                return result;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+
         }
     }
 
