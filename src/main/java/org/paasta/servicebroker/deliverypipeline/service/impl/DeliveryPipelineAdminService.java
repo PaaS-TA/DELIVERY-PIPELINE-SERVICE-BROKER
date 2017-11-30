@@ -125,7 +125,7 @@ public class DeliveryPipelineAdminService {
 
             params.put("id", serviceInstance.getServiceInstanceId());
             params.put("owner", owner);
-            params.put("service_type", serviceType);
+            params.put("serviceType", serviceType);
 
             String reqUrl = apiUrl + "/serviceInstance";
             logger.info("apiUrl : " + reqUrl);
