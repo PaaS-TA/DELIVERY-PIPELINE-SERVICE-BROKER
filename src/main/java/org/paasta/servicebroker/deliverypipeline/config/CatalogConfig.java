@@ -16,7 +16,7 @@ public class CatalogConfig {
 		return new Catalog(Arrays.asList(
 				new ServiceDefinition(
 						"af86588c-6212-11e7-907b-b6006ad3dps0",
-						"delivery-pipeline-dev",
+						"delivery-pipeline",
 						"A paasta source control service for application development.provision parameters : parameters {owner : owner}",
 						false, // bindable
 						false, // updatable
@@ -38,7 +38,7 @@ public class CatalogConfig {
 	/* Used by Pivotal CF console */
 	private Map<String, Object> getServiceDefinitionMetadata() {
 		Map<String, Object> sdMetadata = new HashMap<String, Object>();
-		sdMetadata.put("displayName", "delivery-pipeline-dev");
+		sdMetadata.put("displayName", "delivery-pipeline");
 		sdMetadata.put("imageUrl", "");
 		sdMetadata.put("longDescription", "Paas-TA Delivery Pipeline");
 		sdMetadata.put("providerDisplayName", "PaaS-TA");

@@ -26,8 +26,8 @@ public class InitializationConfig {
     @Value("${ci.server.dedicated.urls}")
     String DEDICATED_URLS;
 
-    private final String SHARED = "shared";
-    private final String DEDICATED = "dedicated";
+    private final String SHARED = "Shared";
+    private final String DEDICATED = "Dedicated";
 
 
     @Autowired
@@ -61,6 +61,7 @@ public class InitializationConfig {
                 logger.info("Result :: " + map.get("serverUrl") + " :: " + map.get("type") + " :: " + map.get("process") + " :: " + map.get("status"));
             }
         }
+
         return true;
     }
 
