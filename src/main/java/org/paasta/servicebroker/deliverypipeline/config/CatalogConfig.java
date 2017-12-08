@@ -16,7 +16,7 @@ public class CatalogConfig {
 		return new Catalog(Arrays.asList(
 				new ServiceDefinition(
 						"af86588c-6212-11e7-907b-b6006ad3dps0",
-						"delivery-pipeline",
+						"delivery-pipeline-v2",
 						"A paasta source control service for application development.provision parameters : parameters {owner : owner}",
 						false, // bindable
 						false, // updatable
