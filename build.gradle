@@ -15,21 +15,18 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
-apply plugin: 'war'
+//apply plugin: 'war'
 
 ext {
   springBootCfServiceBrokerVersion = "2.4.0"
   springBootVersion = '1.5.2.RELEASE'
   baseName = 'delivery-pipline-service-broker'
-  version =  '2.4'
-  
   hibernateValidatorVersion = '5.1.0.Final'
   jsonPathVersion = '0.9.1'
 }
 
-war {
+jar{
     baseName = baseName
-    version =  version
 }
 
 repositories {
