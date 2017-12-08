@@ -20,13 +20,12 @@ apply plugin: 'spring-boot'
 ext {
   springBootCfServiceBrokerVersion = "2.4.0"
   springBootVersion = '1.5.2.RELEASE'
-  baseName = 'delivery-pipline-service-broker'
   hibernateValidatorVersion = '5.1.0.Final'
   jsonPathVersion = '0.9.1'
 }
 
 jar{
-    baseName = baseName
+    baseName = 'delivery-pipline-service-broker'
 }
 
 repositories {
