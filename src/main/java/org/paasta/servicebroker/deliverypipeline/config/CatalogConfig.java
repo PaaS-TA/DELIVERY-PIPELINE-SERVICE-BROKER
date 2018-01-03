@@ -3,33 +3,85 @@ package org.paasta.servicebroker.deliverypipeline.config;
 import org.openpaas.servicebroker.model.Catalog;
 import org.openpaas.servicebroker.model.Plan;
 import org.openpaas.servicebroker.model.ServiceDefinition;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.*;
 
 @Configuration
-public class CatalogConfig {
+public class
+CatalogConfig {
+
+
+    @Value("${serviceDefinition.id}")
+    String SERVICEDEFINITION_ID;
+
+    @Value("${serviceDefinition.name}")
+    String SERVICEDEFINITION_NAME;
+
+    @Value("${serviceDefinition.desc}")
+    String SERVICEDEFINITION_DESC;
+
+    @Value("${serviceDefinition.bindable}")
+    String SERVICEDEFINITION_BINDABLE_STRING;
+
+    @Value("${serviceDefinition.planupdatable}")
+    String SERVICEDEFINITION_PLANUPDATABLE_STRING;
+
+    @Value("${serviceDefinition.plan1.id}")
+    String SERVICEDEFINITION_PLAN1_ID;
+
+    @Value("${serviceDefinition.plan1.name}")
+    String SERVICEDEFINITION_PLAN1_NAME;
+
+    @Value("${serviceDefinition.plan1.desc}")
+    String SERVICEDEFINITION_PLAN1_DESC;
+
+    @Value("${serviceDefinition.plan1.type}")
+    String SERVICEDEFINITION_PLAN1_TYPE;
+
+    @Value("${serviceDefinition.plan2.id}")
+    String SERVICEDEFINITION_PLAN2_ID;
+
+    @Value("${serviceDefinition.plan2.name}")
+    String SERVICEDEFINITION_PLAN2_NAME;
+
+    @Value("${serviceDefinition.plan2.desc}")
+    String SERVICEDEFINITION_PLAN2_DESC;
+
+    @Value("${serviceDefinition.plan2.type}")
+    String SERVICEDEFINITION_PLAN2_TYPE;
+
 
 	@Bean
 	public Catalog catalog() {
+		boolean SERVICEDEFINITION_BINDABLE = false;
+		boolean SERVICEDEFINITION_PLANUPDATABLE = false;
+
+		if(SERVICEDEFINITION_BINDABLE_STRING.toUpperCase().trim().equals("TRUE"))
+			SERVICEDEFINITION_BINDABLE = true;
+
+		if(SERVICEDEFINITION_PLANUPDATABLE_STRING.toUpperCase().trim().equals("TRUE"))
+			SERVICEDEFINITION_PLANUPDATABLE = true;
+
 		return new Catalog(Arrays.asList(
 				new ServiceDefinition(
-						"af86588c-6212-11e7-907b-b6006ad3dps0",
-						"delivery-pipeline-v2",
-						"A paasta source control service for application development.provision parameters : parameters {owner : owner}",
-						false, // bindable
-						false, // updatable
+                        SERVICEDEFINITION_ID,
+						SERVICEDEFINITION_NAME,
+						SERVICEDEFINITION_DESC,
+						SERVICEDEFINITION_BINDABLE, // bindable
+						SERVICEDEFINITION_PLANUPDATABLE, // updatable
 						Arrays.asList(
-								new Plan("a5930564-6212-11e7-907b-b6006ad3dps1",
-										"delivery-pipeline-shared",
-										"This is a shared service plan. All services are created equally.",
-										getPlanMetadata("A")),
-								new Plan("a5930564-6212-11e7-907b-b6006ad3dps2",
-										"delivery-pipeline-dedicated",
-										"This is a dedicated service plan. All services are created equally.",
-										getPlanMetadata("B"))),
-						Arrays.asList("delivery-pipeline-shared", "delivery-pipeline-dedicated"),
+								new Plan(SERVICEDEFINITION_PLAN1_ID,
+										SERVICEDEFINITION_PLAN1_NAME,
+										SERVICEDEFINITION_PLAN2_DESC,
+										getPlanMetadata(SERVICEDEFINITION_PLAN1_TYPE)),
+								new Plan(SERVICEDEFINITION_PLAN2_ID,
+										SERVICEDEFINITION_PLAN2_NAME,
+										SERVICEDEFINITION_PLAN2_DESC,
+										getPlanMetadata(SERVICEDEFINITION_PLAN2_TYPE))),
+						Arrays.asList(SERVICEDEFINITION_PLAN1_NAME, SERVICEDEFINITION_PLAN2_NAME),
 						getServiceDefinitionMetadata(),
 						null,
 						null)));
