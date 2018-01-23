@@ -29,7 +29,8 @@ public class DeliveryPipelineServiceInstanceService implements ServiceInstanceSe
     public static final String TOKEN_OWNER = "owner";
 
     public static final String shared = "a5930564-6212-11e7-907b-b6006ad3dps1";
-    public static final String dedicated = "a5930564-6212-11e7-907b-b6006ad3dps2";
+    @Value("${ci.server.dedicated.urls}")
+    public String dedicated;
 
     @Value("${service.dashboard.url}")
     private String dashboardUrl;
